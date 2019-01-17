@@ -6,7 +6,7 @@ exports.getAddProduct = (req, res, next) => {
   // res.render('add-product', {pageTitle: 'Add Product', path: '/admin/add-product'})
 
   // hbs
-  res.render('add-product', {
+  res.render('admin/add-product', {
     pageTitle: 'Add Product',
     path: '/admin/add-product',
     formsCSS: true,
@@ -16,24 +16,18 @@ exports.getAddProduct = (req, res, next) => {
 }
 
 exports.postAddProduct = (req, res, next) => {
-  const product = new Product(req.body.title)
+  const {title, imageUrl, price, description} = req.body
+  const product = new Product(title, imageUrl, price, description)
   product.save()
   res.redirect('/')
 }
 
 exports.getProducts = (req, res, next) => {
   Product.fetchAll(products => {
-    // hbs
-    res.render('shop', {
+    res.render('admin/products', {
       prods: products,
-      pageTitle: 'Shop',
-      path: '/',
-      hasProducts: products.length > 0,
-      activeShop: true,
-      productCSS: true
+      pageTitle: 'Admin Products',
+      path: '/admin/products'
     })
   })
-  // res.sendFile(path.join(rootDir, 'views', 'shop.html'))
-  // pug
-  // res.render('shop', {prods: products, pageTitle: 'Shop', path: '/'})
 }
