@@ -1,4 +1,4 @@
-const Product = require('../models/product')
+const Product = require('../models/product-sql')
 
 exports.getAddProduct = (req, res, next) => {
   // res.sendFile(path.join(rootDir, 'views', 'add-product.html'))

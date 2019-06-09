@@ -1,7 +1,7 @@
 const path = require('path')
 const express = require('express')
 
-const adminController = require('../controllers/admin')
+const adminController = require('../controllers/admin-sql')
 
 const router = express.Router()
 
