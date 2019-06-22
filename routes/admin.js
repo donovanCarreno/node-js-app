@@ -2,7 +2,8 @@ const path = require('path')
 const express = require('express')
 
 // const adminController = require('../controllers/admin-sql')
-const adminController = require('../controllers/admin-mdb')
+// const adminController = require('../controllers/admin-mdb')
+const adminController = require('../controllers/admin-mg')
 
 const router = express.Router()
 

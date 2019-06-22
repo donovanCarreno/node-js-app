@@ -16,8 +16,11 @@ const errorController = require('./controllers/error')
 // const Order = require('./models/order')
 // const OrderItem = require('./models/order-item')
 
-const mongoConnect = require('./utils/database').mongoConnect
-const User = require('./models/user-mdb')
+// const mongoConnect = require('./utils/database').mongoConnect
+// const User = require('./models/user-mdb')
+
+const mongoose = require('mongoose')
+const User = require('./models/user-mg')
 
 const app = express()
 
@@ -44,12 +47,21 @@ app.use((req, res, next) => {
   //   .catch(e => console.log({e}))
 
   // mongodb
-  User.findById('5d04ef73e749c50fe39e7ea1')
+  // User.findById('5d04ef73e749c50fe39e7ea1')
+  //   .then(user => {
+  //     req.user = new User(user.name, user.email, user.cart, user._id)
+  //     next()
+  //   })
+  //   .catch(e => console.log({e}))  
+
+  // mongoose
+  User
+    .findById('5d0c24565c46a4213cf5df83')
     .then(user => {
-      req.user = new User(user.name, user.email, user.cart, user._id)
+      req.user = user
       next()
     })
-    .catch(e => console.log({e}))  
+    .catch(e => console.log({e}))
 })
 
 app.use('/admin', adminRoutes)
@@ -57,10 +69,29 @@ app.use(shopRoutes)
 
 app.use(errorController.get404)
 
-mongoConnect(() => {
+// mongoConnect(() => {
+//   app.listen(3000)
+// })
 
-  app.listen(3000)
-})
+mongoose.connect('mongodb+srv://donovan:pwd@node-js-0gkfp.mongodb.net/shop?retryWrites=true&w=majority')
+  .then(res => {
+    User
+      .findOne()
+      .then(user => {
+        if (!user) {
+          const user = new User({
+            name: 'donovan',
+            email: 'me@me.com',
+            cart: {
+              items: []
+            }
+          })
+          user.save()
+        }
+      })
+    app.listen(3000)
+  })
+  .catch(e => console.log({e}))
 
 // Product.belongsTo(User, {
 //   constraints: true,
