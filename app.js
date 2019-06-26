@@ -1,6 +1,8 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
+const csrf = require('csurf')
+const flash = require('connect-flash')
 const session = require('express-session')
 const MongoDBStore = require('connect-mongodb-session')(session)
 const path = require('path')
@@ -34,6 +36,8 @@ const store = new MongoDBStore({
   collection: 'sessions'
 })
 
+const csrfProtection = csrf()
+
 // app.engine('hbs', expressHbs({
 //   layoutsDir: 'views/layouts/',
 //   defaultLayout: 'main-layout',
@@ -54,6 +58,9 @@ app.use(session({
   store
 }))
 
+app.use(csrfProtection)
+app.use(flash())
+
 app.use((req, res, next) => {
   if (!req.session.user) {
     return next()
@@ -65,6 +72,12 @@ app.use((req, res, next) => {
       next()
     })
     .catch(e => console.log({e}))
+})
+
+app.use((req, res, next) => {
+  res.locals.isAuthenticated = req.session.isLoggedIn
+  res.locals.csrfToken = req.csrfToken()
+  next()
 })
 
 // app.use((req, res, next) => {
@@ -106,20 +119,6 @@ app.use(errorController.get404)
 
 mongoose.connect(MONGODB_URI)
   .then(res => {
-    User
-      .findOne()
-      .then(user => {
-        if (!user) {
-          const user = new User({
-            name: 'donovan',
-            email: 'me@me.com',
-            cart: {
-              items: []
-            }
-          })
-          user.save()
-        }
-      })
     app.listen(3000)
   })
   .catch(e => console.log({e}))
