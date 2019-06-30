@@ -56,32 +56,32 @@ exports.postEditProduct = (req, res, next) => {
   const updatedPrice = req.body.price
   const updatedImageUrl = req.body.imageUrl
   const updatedDescription = req.body.description
-  
-  const product = new Product({
-    updatedTitle, updatedPrice, updatedDescription, updatedImageUrl, prodId
-  })
 
   Product
     .findById(prodId)
     .then(product => {
+      if (product.userId.toString() !== req.user._id.toString()) {
+        return res.redirect('/')
+      }
       product.title = updatedTitle
       product.price = updatedPrice
       product.description = updatedDescription
       product.imageUrl = updatedImageUrl
 
-      return product.save()
-    })
-    .then(result => {
-      console.log('Updated Product')
-      res.redirect('/admin/products')
+      return product
+        .save()
+        .then(result => {
+          console.log('Updated Product')
+          res.redirect('/admin/products')
+        })
     })
     .catch(e => console.log({e}))    
 }
 
 exports.getProducts = (req, res, next) => {
   Product
-    .find()
-    .populate('userId')
+    .find({userId: req.user._id})
+    // .populate('userId')
     .then(products => {
       res.render('admin/products', {
         prods: products,
@@ -94,7 +94,8 @@ exports.getProducts = (req, res, next) => {
 exports.postDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId
   Product
-    .findByIdAndRemove(prodId)
+    // .findByIdAndRemove(prodId)
+    .deleteOne({_id: prodId, userId: req.user._id})
     .then(() => {
       console.log('Destroyed Product')
       res.redirect('/admin/products')
