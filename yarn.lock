@@ -740,6 +740,13 @@ express-session@^1.16.2:
     safe-buffer "5.1.2"
     uid-safe "~2.1.5"
 
+express-validator@^6.1.0:
+  version "6.1.0"
+  resolved "https://registry.yarnpkg.com/express-validator/-/express-validator-6.1.0.tgz#131061a6bdaa3547b76df163c0310197b2d4723b"
+  dependencies:
+    lodash "^4.17.11"
+    validator "^11.0.0"
+
 express@^4.16.4:
   version "4.16.4"
   resolved "https://registry.yarnpkg.com/express/-/express-4.16.4.tgz#fddef61926109e24c515ea97fd2f1bdbf62df12e"
@@ -2748,6 +2755,10 @@ uuid@^3.2.1, uuid@^3.3.2:
 validator@^10.4.0:
   version "10.11.0"
   resolved "https://registry.yarnpkg.com/validator/-/validator-10.11.0.tgz#003108ea6e9a9874d31ccc9e5006856ccd76b228"
+
+validator@^11.0.0:
+  version "11.0.0"
+  resolved "https://registry.yarnpkg.com/validator/-/validator-11.0.0.tgz#fb10128bfb1fd14ce4ed36b79fc94289eae70667"
 
 vary@~1.1.2:
   version "1.1.2"

@@ -1,6 +1,7 @@
 const User = require('../models/user-mg')
 const bcrypt = require('bcryptjs')
 const crypto = require('crypto')
+const {validationResult} = require('express-validator/check')
 
 exports.getLogin = (req, res, next) => {
   let message = req.flash('error')
@@ -27,7 +28,12 @@ exports.getSignup = (req, res, next) => {
   res.render('auth/signup', {
     path: '/signup',
     pageTitle: 'Signup',
-    errorMessage: message
+    errorMessage: message,
+    oldInput: {
+      email: '',
+      password: '',
+      confirmPassword: ''
+    }
   })
 }
 
@@ -65,31 +71,33 @@ exports.postLogin = (req, res, next) => {
 
 exports.postSignup = (req, res, next) => {
   const {email, password, confirmPassword} = req.body
+  const errors = validationResult(req)
 
-  User
-    .findOne({email})
-    .then(userDoc => {
-      if (userDoc) {
-        req.flash('error', 'E-mail exists already, please pick a different one')
-        return res.redirect('/signup')
-      }
+  if (!errors.isEmpty()) {
+    return res
+      .status(422)
+      .render('auth/signup', {
+        path: '/signup',
+        pageTitle: 'Signup',
+        errorMessage: errors.array()[0].msg,
+        oldInput: {email, password, confirmPassword}
+      })
+  }
       
-      return bcrypt
-        .hash(password, 12)
-        .then(hashedPwd => {
-          const user = new User({
-            email,
-            password: hashedPwd,
-            cart: {items: []}
-          })
-    
-          return user.save()
-        })
-        .then(result => {
-          res.redirect('/login')
-        })
+  bcrypt
+    .hash(password, 12)
+    .then(hashedPwd => {
+      const user = new User({
+        email,
+        password: hashedPwd,
+        cart: {items: []}
+      })
+
+      return user.save()
     })
-    .catch(e => console.log({e}))
+    .then(result => {
+      res.redirect('/login')
+    })
 }
 
 exports.postLogout = (req, res, next) => {
